@@ -1,4 +1,7 @@
 package com.daniel.userAuthFlow.exception;
 
-public class ValidationError {
+public record ValidationError(
+        String field,
+        String message
+) {
 }

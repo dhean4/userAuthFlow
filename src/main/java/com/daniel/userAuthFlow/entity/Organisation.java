@@ -1,56 +1,44 @@
 package com.daniel.userAuthFlow.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
-@Table(name = "organisations")
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = "orgId"))
 public class Organisation {
+
     @Id
+    @Column(name = "orgId", updatable = false, nullable = false)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private String orgId;
 
-    @NotBlank(message = "Organisation name is required")
-    private String orgName;
+    @NotNull
+    private String name;
 
     private String description;
 
     @ManyToMany
-    @JoinTable(
-            name = "organisation_users",
-            joinColumns = @JoinColumn(name = "org_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private Set<User> users = new HashSet<>();
+    private List<User> users;
 
-    public Organisation() {
+    @ManyToOne
+    @JoinColumn(name = "creator_id", nullable = false)
+    private User creator;
+
+    public Organisation(
+            String name,
+            String description
+    ) {
         this.orgId = UUID.randomUUID().toString();
-    }
-
-    public String getOrgId() {
-        return orgId;
-    }
-
-    public void setOrgId(String orgId) {
-        this.orgId = orgId;
-    }
-
-    public String getOrgName() {
-        return orgName;
-    }
-
-    public void setOrgName(String orgName) {
-        this.orgName = orgName;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
+        this.name = name;
         this.description = description;
     }
 }
